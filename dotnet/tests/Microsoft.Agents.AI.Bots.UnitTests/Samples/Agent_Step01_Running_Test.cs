@@ -1,10 +1,6 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 
-using System;
-using System.ClientModel;
 using System.Threading.Tasks;
-using Azure.AI.OpenAI;
-using OpenAI;
 
 // ReSharper disable All
 #pragma warning disable IDE0059
