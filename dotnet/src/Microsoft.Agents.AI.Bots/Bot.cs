@@ -176,5 +176,24 @@ public abstract class Bot
         File.WriteAllText(fileName, JsonSerializer.Serialize(jsonElement));
     }
 
+    public void Deserialize(JsonElement serializedThread)
+    {
+        this.Initialize();
+        this._agentThread = this._agent!.DeserializeThread(serializedThread);
+    }
+
+    public void Deserialize(string fileName)
+    {
+        this.Initialize();
+        var serializedThread = JsonSerializer.Deserialize<JsonElement>(File.ReadAllText(fileName));
+        this._agentThread = this._agent!.DeserializeThread(serializedThread);
+    }
+
     #endregion
+
+    public AITool AsAIFunction()
+    {
+        this.Initialize();
+        return this._agent!.AsAIFunction(null, this._agentThread);
+    }
 }

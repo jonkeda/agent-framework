@@ -35,6 +35,8 @@ public class Agent_Step06_PersistedConversations_Test
         {
         }
 
-        agent.Serialize();
+        var serializedThread = agent.Serialize();
+
+        agent.Deserialize(serializedThread);
     }
 }

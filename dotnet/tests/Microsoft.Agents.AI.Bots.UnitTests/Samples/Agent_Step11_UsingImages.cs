@@ -1,19 +1,15 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 
-using System;
-using System.ClientModel;
 using System.Threading.Tasks;
-using Azure.AI.OpenAI;
-using OpenAI;
 
 // ReSharper disable All
 #pragma warning disable IDE0059
 
 namespace Microsoft.Agents.AI.Bots.UnitTests.Samples;
 
-public class Agent_Step01_Running : Bot
+public class Agent_Step11_UsingImages : Bot
 {
-    public Agent_Step01_Running(BotModel model) : base(model)
+    public Agent_Step11_UsingImages(BotModel model) : base(model)
     {
         this.Name = "Joker";
         this.Description = "A bot that tells jokes.";
@@ -21,7 +17,7 @@ public class Agent_Step01_Running : Bot
     }
 }
 
-public class Agent_Step01_Running_Test
+public class Agent_Step11_UsingImages_Test
 {
     [Fact]
     public async Task Running_Test_Async()
@@ -33,7 +29,7 @@ public class Agent_Step01_Running_Test
 
         var agent = new Agent_Step01_Running(model);
 
-        await agent.RunAsync("Tell me a joke about a pirate.");
+        var response = await agent.RunAsync("Tell me a joke about a pirate.");
 
         await foreach (var update in agent.RunStreamingAsync("Tell me a joke about a pirate."))
         {
