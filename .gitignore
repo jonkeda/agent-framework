@@ -203,3 +203,4 @@ agents.md
 # AI
 .claude/
 WARP.md
+/dotnet/tests/Microsoft.Agents.AI.Bots.UnitTests/Constants.cs
