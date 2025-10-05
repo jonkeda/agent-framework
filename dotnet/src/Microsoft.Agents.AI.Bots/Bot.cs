@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 
 using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.AI;
@@ -32,7 +33,7 @@ public abstract class Bot<T> : Bot
         _ = Throw.IfNullOrWhitespace(message);
 
         // Invoke the agent with some unstructured input, to extract the structured information from.
-        var response = await this.RunAsync(new ChatMessage(ChatRole.User, message), thread, options, cancellationToken);
+        var response = await this.RunAsync(new ChatMessage(ChatRole.User, message), options, cancellationToken);
 
         // Deserialize the response into the PersonInfo class.
         return response.Deserialize<T>(JsonSerializerOptions.Web);
@@ -72,12 +73,12 @@ public abstract class Bot
 
     #region Methods
 
-    private AIAgent _agent;
+    private AIAgent? _agent;
     private AgentThread? _agentThread;
 
-    private void Initialize()
+    protected void Initialize()
     {
-        if (_agent == null)
+        if (this._agent == null)
         {
             this._agent = this._model.CreateAgent(this);
             if (this.RunType == BotRunType.MultiTurn)
@@ -92,78 +93,87 @@ public abstract class Bot
     }
 
     public Task<AgentRunResponse> RunAsync(
-        AgentThread? thread = null,
         AgentRunOptions? options = null,
         CancellationToken cancellationToken = default) =>
-        this.RunAsync([], thread, options, cancellationToken);
+        this.RunAsync([], options, cancellationToken);
 
     public Task<AgentRunResponse> RunAsync(
         string message,
-        AgentThread? thread = null,
         AgentRunOptions? options = null,
         CancellationToken cancellationToken = default)
     {
         _ = Throw.IfNullOrWhitespace(message);
 
-        return this.RunAsync(new ChatMessage(ChatRole.User, message), thread, options, cancellationToken);
+        return this.RunAsync(new ChatMessage(ChatRole.User, message), options, cancellationToken);
     }
 
     public Task<AgentRunResponse> RunAsync(
         ChatMessage message,
-        AgentThread? thread = null,
         AgentRunOptions? options = null,
         CancellationToken cancellationToken = default)
     {
         _ = Throw.IfNull(message);
 
-        return this.RunAsync([message], thread, options, cancellationToken);
+        return this.RunAsync([message], options, cancellationToken);
     }
 
     public Task<AgentRunResponse> RunAsync(
         IEnumerable<ChatMessage> messages,
-        AgentThread? thread = null,
         AgentRunOptions? options = null,
         CancellationToken cancellationToken = default)
     {
         this.Initialize();
-        return this._agent.RunAsync(messages, thread, options, cancellationToken);
+        return this._agent!.RunAsync(messages, this._agentThread, options, cancellationToken);
     }
 
     public IAsyncEnumerable<AgentRunResponseUpdate> RunStreamingAsync(
-        AgentThread? thread = null,
         AgentRunOptions? options = null,
         CancellationToken cancellationToken = default) =>
-        this.RunStreamingAsync([], thread, options, cancellationToken);
+        this.RunStreamingAsync([], options, cancellationToken);
 
     public IAsyncEnumerable<AgentRunResponseUpdate> RunStreamingAsync(
         string message,
-        AgentThread? thread = null,
         AgentRunOptions? options = null,
         CancellationToken cancellationToken = default)
     {
         _ = Throw.IfNullOrWhitespace(message);
 
-        return this.RunStreamingAsync(new ChatMessage(ChatRole.User, message), thread, options, cancellationToken);
+        return this.RunStreamingAsync(new ChatMessage(ChatRole.User, message), options, cancellationToken);
     }
 
     public IAsyncEnumerable<AgentRunResponseUpdate> RunStreamingAsync(
         ChatMessage message,
-        AgentThread? thread = null,
         AgentRunOptions? options = null,
         CancellationToken cancellationToken = default)
     {
         _ = Throw.IfNull(message);
 
-        return this.RunStreamingAsync([message], thread, options, cancellationToken);
+        return this.RunStreamingAsync([message], options, cancellationToken);
     }
 
     public IAsyncEnumerable<AgentRunResponseUpdate> RunStreamingAsync(
         IEnumerable<ChatMessage> messages,
-        AgentThread? thread = null,
         AgentRunOptions? options = null,
         CancellationToken cancellationToken = default)
     {
-        return this._agent.RunStreamingAsync(messages, thread, options, cancellationToken);
+        this.Initialize();
+        return this._agent!.RunStreamingAsync(messages, this._agentThread, options, cancellationToken);
+    }
+
+    public JsonElement Serialize(JsonSerializerOptions? jsonSerializerOptions = null)
+    {
+        if (this.RunType == BotRunType.SingleTurn)
+        {
+            throw new System.InvalidOperationException("Cannot serialize a single-turn bot.");
+        }
+        this.Initialize();
+        return this._agentThread!.Serialize(jsonSerializerOptions);
+    }
+
+    public void SerializeToFile(string fileName, JsonSerializerOptions? jsonSerializerOptions = null)
+    {
+        var jsonElement = this.Serialize(jsonSerializerOptions);
+        File.WriteAllText(fileName, JsonSerializer.Serialize(jsonElement));
     }
 
     #endregion

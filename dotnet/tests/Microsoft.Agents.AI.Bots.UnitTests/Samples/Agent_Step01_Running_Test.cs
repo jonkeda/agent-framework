@@ -9,7 +9,7 @@ namespace Microsoft.Agents.AI.Bots.UnitTests.Samples;
 
 public class Agent_Step01_Running : Bot
 {
-    public Agent_Step01_Running()
+    public Agent_Step01_Running(BotModel model) : base(model)
     {
         this.Name = "Joker";
         this.Description = "A bot that tells jokes.";
@@ -27,8 +27,7 @@ public class Agent_Step01_Running_Test
             Constants.DeploymentName,
             Constants.ApiKey);
 
-        var agent = new Agent_Step01_Running()
-            .CreateAgent(model);
+        var agent = new Agent_Step01_Running(model);
 
         var response = await agent.RunAsync("Tell me a joke about a pirate.");
 

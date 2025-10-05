@@ -9,7 +9,7 @@ namespace Microsoft.Agents.AI.Bots.UnitTests.Samples;
 
 public class Agent_Step02_MultiturnConversation : Bot
 {
-    public Agent_Step02_MultiturnConversation()
+    public Agent_Step02_MultiturnConversation(BotModel model) : base(model)
     {
         this.Name = "Joker";
         this.Description = "A bot that tells jokes.";
@@ -27,8 +27,7 @@ public class Agent_Step02_MultiturnConversation_Test
             Constants.DeploymentName,
             Constants.ApiKey);
 
-        var agent = new Agent_Step02_MultiturnConversation()
-            .CreateAgent(model);
+        var agent = new Agent_Step02_MultiturnConversation(model);
 
         var response = await agent.RunAsync("Tell me a joke about a pirate.");
 

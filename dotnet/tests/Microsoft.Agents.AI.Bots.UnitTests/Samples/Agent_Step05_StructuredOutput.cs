@@ -27,7 +27,7 @@ public class PersonInfo
 
 public class Agent_Step05_StructuredOutput : Bot<PersonInfo>
 {
-    public Agent_Step05_StructuredOutput()
+    public Agent_Step05_StructuredOutput(BotModel model) : base(model)
     {
         this.Name = "HelpfulAssistant";
         this.Description = "A bot that is a helpful assistant.";
@@ -45,8 +45,7 @@ public class Agent_Step05_StructuredOutput_Test
             Constants.DeploymentName,
             Constants.ApiKey);
 
-        var agent = new Agent_Step05_StructuredOutput()
-            .CreateOutputAgent(model);
+        var agent = new Agent_Step05_StructuredOutput(model);
 
         // Invoke the agent with some unstructured input, to extract the structured information from.
         var response = await agent.RunOutputAsync("Please provide information about John Smith, who is a 35-year-old software engineer.");

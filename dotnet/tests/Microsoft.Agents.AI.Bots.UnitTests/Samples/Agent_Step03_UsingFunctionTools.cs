@@ -10,7 +10,7 @@ namespace Microsoft.Agents.AI.Bots.UnitTests.Samples;
 
 public class Agent_Step03_UsingFunctionTools : Bot
 {
-    public Agent_Step03_UsingFunctionTools()
+    public Agent_Step03_UsingFunctionTools(BotModel model) : base(model)
     {
         this.Name = "Weather";
         this.Description = "A bot that tells the weather.";
@@ -32,8 +32,7 @@ public class Agent_Step03_UsingFunctionTools_Test
             Constants.DeploymentName,
             Constants.ApiKey);
 
-        var agent = new Agent_Step03_UsingFunctionTools()
-            .CreateAgent(model);
+        var agent = new Agent_Step03_UsingFunctionTools(model);
 
         var response = await agent.RunAsync("What is the weather like in Amsterdam?");
 

@@ -4,13 +4,12 @@ using System.Threading.Tasks;
 
 // ReSharper disable All
 #pragma warning disable IDE0059
-#pragma warning disable CA1707
 
 namespace Microsoft.Agents.AI.Bots.UnitTests.Samples;
 
 public class Agent_Step06_PersistedConversations : Bot
 {
-    public Agent_Step06_PersistedConversations()
+    public Agent_Step06_PersistedConversations(BotModel model) : base(model)
     {
         this.Name = "Joker";
         this.Description = "A bot that tells jokes.";
@@ -28,8 +27,7 @@ public class Agent_Step06_PersistedConversations_Test
             Constants.DeploymentName,
             Constants.ApiKey);
 
-        var agent = new Agent_Step01_Running()
-            .CreateAgent(model);
+        var agent = new Agent_Step01_Running(model);
 
         var response = await agent.RunAsync("Tell me a joke about a pirate.");
 
