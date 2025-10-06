@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft. All rights reserved.
 
 using System.Threading.Tasks;
+using Microsoft.Extensions.AI;
 
 // ReSharper disable All
 #pragma warning disable IDE0059
@@ -11,9 +12,9 @@ public class Agent_Step11_UsingImages : Bot
 {
     public Agent_Step11_UsingImages(BotModel model) : base(model)
     {
-        this.Name = "Joker";
-        this.Description = "A bot that tells jokes.";
-        this.Instruction = "You are good at telling jokes.";
+        this.Name = "VisionAgent";
+        this.Description = "A bot that can analyze images.";
+        this.Instruction = "You are a helpful agent that can analyze images.";
     }
 }
 
@@ -29,9 +30,14 @@ public class Agent_Step11_UsingImages_Test
 
         var agent = new Agent_Step01_Running(model);
 
-        var response = await agent.RunAsync("Tell me a joke about a pirate.");
+        ChatMessage message = new(ChatRole.User, [
+            new TextContent("What do you see in this image?"),
+            new UriContent("https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Gfp-wisconsin-madison-the-nature-boardwalk.jpg/2560px-Gfp-wisconsin-madison-the-nature-boardwalk.jpg", "image/jpeg")
+        ]);
 
-        await foreach (var update in agent.RunStreamingAsync("Tell me a joke about a pirate."))
+        var response = await agent.RunAsync(message);
+
+        await foreach (var update in agent.RunStreamingAsync(message))
         {
         }
     }

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>$(ProjectsTargetFrameworks)</TargetFrameworks>
@@ -7,6 +7,10 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Microsoft.Agents.AI.Bots\Microsoft.Agents.AI.Bots.csproj" />
     <ProjectReference Include="..\..\src\Microsoft.Agents.AI.OpenAI\Microsoft.Agents.AI.OpenAI.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Botflows\" />
   </ItemGroup>
 
 </Project>

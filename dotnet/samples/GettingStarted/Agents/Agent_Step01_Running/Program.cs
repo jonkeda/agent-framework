@@ -19,6 +19,15 @@ AIAgent agent = new AzureOpenAIClient(
      .GetChatClient(deploymentName)
      .CreateAIAgent(JokerInstructions, JokerName);
 
+/*
+AIAgent agent = new AzureOpenAIClient(
+        new Uri(Constants.EndPoint),
+        new ApiKeyCredential(Constants.ApiKey))
+    .GetChatClient(Constants.DeploymentName)
+    .CreateAIAgent(JokerInstructions, JokerName);
+    */
+
+
 // Invoke the agent and output the text result.
 Console.WriteLine(await agent.RunAsync("Tell me a joke about a pirate."));
 

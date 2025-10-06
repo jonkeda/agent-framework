@@ -69,6 +69,15 @@ public abstract class Bot
 
     public BotRunType RunType { get; protected set; } = BotRunType.MultiTurn;
 
+    public AIAgent Agent
+    {
+        get
+        {
+            this.InitializeAgent();
+            return this._agent!;
+        }
+    }
+
     #endregion
 
     #region Methods
@@ -76,14 +85,22 @@ public abstract class Bot
     private AIAgent? _agent;
     private AgentThread? _agentThread;
 
-    protected void Initialize()
+    protected void InitializeAgent()
     {
         if (this._agent == null)
         {
             this._agent = this._model.CreateAgent(this);
+        }
+    }
+
+    protected void InitializeThread()
+    {
+        this.InitializeAgent();
+        if (this._agentThread == null)
+        {
             if (this.RunType == BotRunType.MultiTurn)
             {
-                this._agentThread = this._agent.GetNewThread();
+                this._agentThread = this._agent!.GetNewThread();
             }
             else
             {
@@ -122,7 +139,7 @@ public abstract class Bot
         AgentRunOptions? options = null,
         CancellationToken cancellationToken = default)
     {
-        this.Initialize();
+        this.InitializeThread();
         return this._agent!.RunAsync(messages, this._agentThread, options, cancellationToken);
     }
 
@@ -156,7 +173,7 @@ public abstract class Bot
         AgentRunOptions? options = null,
         CancellationToken cancellationToken = default)
     {
-        this.Initialize();
+        this.InitializeThread();
         return this._agent!.RunStreamingAsync(messages, this._agentThread, options, cancellationToken);
     }
 
@@ -166,7 +183,7 @@ public abstract class Bot
         {
             throw new System.InvalidOperationException("Cannot serialize a single-turn bot.");
         }
-        this.Initialize();
+        this.InitializeThread();
         return this._agentThread!.Serialize(jsonSerializerOptions);
     }
 
@@ -178,13 +195,13 @@ public abstract class Bot
 
     public void Deserialize(JsonElement serializedThread)
     {
-        this.Initialize();
+        this.InitializeThread();
         this._agentThread = this._agent!.DeserializeThread(serializedThread);
     }
 
     public void Deserialize(string fileName)
     {
-        this.Initialize();
+        this.InitializeThread();
         var serializedThread = JsonSerializer.Deserialize<JsonElement>(File.ReadAllText(fileName));
         this._agentThread = this._agent!.DeserializeThread(serializedThread);
     }
@@ -193,7 +210,7 @@ public abstract class Bot
 
     public AITool AsAIFunction()
     {
-        this.Initialize();
+        this.InitializeThread();
         return this._agent!.AsAIFunction(null, this._agentThread);
     }
 }
